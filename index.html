@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1702LUCID - Wall Street Institutional Terminal</title>
+    
+    <!-- KUPAKIA FONTS ZA GOOGLE -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* MIFUMO YA RANGI DYNAMIC - HIGH CONTRAST */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #111827 100%);
+            --tile-color: rgba(255, 255, 255, 0.025);
+            --card-bg: rgba(11, 17, 32, 0.85); 
+            --text-color: #ffffff; /* DARK MODE: PURE WHITE TEXT */
+            --text-muted: #cbd5e1; 
+            --border-color: #334155;
+            --header-bg: #0b1120;
+            --title-color: #f59e0b; 
+            --accent-color: #38bdf8;
+            --btn-bg: #1e293b;
+            --btn-text: #ffffff;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --session-box: rgba(6, 9, 19, 0.6);
+        }
+
+        .light-theme {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --tile-color: rgba(0, 0, 0, 0.035);
+            --card-bg: #ffffff;
+            --text-color: #000000; /* LIGHT MODE: PURE BLACK TEXT */
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            --header-bg: #ffffff;
+            --title-color: #b45309; 
+            --accent-color: #0284c7;
+            --btn-bg: #e2e8f0;
+            --btn-text: #000000;
+            --session-box: #f1f5f9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.2s, color 0.2s, background-image 0.2s;
+        }
+
+        body {
+            background-image: 
+                var(--bg-gradient),
+                linear-gradient(var(--tile-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--tile-color) 1px, transparent 1px);
+            background-size: 100% 100%, 35px 35px, 35px 35px;
+            color: var(--text-color);
+            padding-bottom: 20px;
+            background-attachment: fixed;
+        }
+
+        header {
+            background-color: var(--header-bg);
+            padding: 12px 15px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .site-logo { width: 42px; height: 42px; }
+        .logo-shape { fill: var(--text-color); }
+        .logo-text { fill: var(--header-bg); }
+
+        header h1 {
+            font-size: 13px;
+            color: var(--text-color); 
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #theme-toggle, .test-sound-btn {
+            background-color: var(--btn-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .live-indicator {
+            background-color: var(--success-color);
+            color: #060913;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        .container { padding: 12px; }
+
+        /* TRADING SESSIONS DASHBOARD */
+        .sessions-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 10px 0;
+        }
+
+        .session-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .session-name { font-size: 10px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
+        .session-status { font-size: 11px; font-weight: 700; margin-top: 2px; }
+        .status-open { color: var(--success-color); }
+        .status-closed { color: var(--danger-color); }
+
+        .section-title {
+            font-size: 11px;
+            color: var(--title-color); 
+            margin: 20px 0 8px 0;
+            border-left: 3px solid var(--title-color);
+            padding-left: 8px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .market-link {
+            display: block;
+            text-align: center;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            padding: 10px 4px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+        }
+
+        .terminal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .chart-container { height: 480px; }
+        .calendar-container { height: 400px; }
+        .gauge-container { height: 380px; }
+
+        .checklist-box, .calc-box, .journal-box { padding: 15px; }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: var(--session-box);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checklist-item input { margin-right: 12px; transform: scale(1.2); accent-color: var(--success-color); }
+        .checklist-item label { font-size: 12px; font-weight: 500; width: 100%; }
+
+        /* CONFLUENCE SCORE BAND */
+        .confluence-display {
+            background-color: var(--session-box);
+            border: 1px dashed var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 15px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* JOURNAL STATS BADGES */
+        .journal-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .stat-badge {
+            background: var(--session-box);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .table-responsive { padding: 10px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; font-family: 'JetBrains Mono', monospace; }
+        th { color: var(--text-muted); padding: 8px 4px; border-bottom: 2px solid var(--border-color); }
+        td { padding: 10px 4px; border-bottom: 1px solid var(--border-color); color: var(--text-color); }
+
+        .bullish { color: var(--success-color); font-weight: bold; }
+        .bearish { color: var(--danger-color); font-weight: bold; }
+
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+        .input-group input, .input-group select {
+            width: 100%; padding: 10px; background-color: var(--session-box); border: 1px solid var(--border-color); color: var(--text-color); border-radius: 4px; font-size: 13px;
+        }
+
+        .calc-btn, .journal-btn {
+            width: 100%; padding: 12px; background-color: var(--accent-color); color: #060913; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        .delete-btn {
+            background: none; border: none; color: var(--danger-color); font-weight: bold; cursor: pointer; font-size: 14px;
+        }
+
+        .result-box { margin-top: 15px; padding: 12px; background-color: var(--btn-bg); border-radius: 4px; border-left: 4px solid var(--success-color); display: none; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+        footer { background-color: var(--card-bg); color: var(--text-muted); text-align: center; padding: 20px 15px; font-size: 11px; border-top: 2px solid var(--border-color); margin-top: 30px; }
+    </style>
+</head>
+<body>
+
+    <!-- TERMINAL HEADER -->
+    <header>
+        <div class="header-brand">
+            <svg viewBox="0 0 500 500" class="site-logo" xmlns="http://www.w3.org/2000/svg">
+                <rect x="40" y="165" width="115" height="42" class="logo-shape" />
+                <rect x="40" y="285" width="115" height="42" class="logo-shape" />
+                <path d="M 150 105 L 275 105 A 145 145 0 0 1 275 395 L 150 395 Z" class="logo-shape" />
+                <text x="260" y="235" font-family="'Poppins', sans-serif" font-weight="700" font-size="44" class="logo-text" text-anchor="middle" letter-spacing="4">1702</text>
+                <text x="265" y="295" font-family="'Poppins', sans-serif" font-weight="500" font-size="24" class="logo-text" text-anchor="middle" letter-spacing="5">MARKETS</text>
+            </svg>
+            <h1>1702LUCID // SYSTEM_NODE</h1>
+        </div>
+        <div class="header-actions">
+            <button class="test-sound-btn" id="sound-test" title="Jaribu sauti ya mfumo">🔊</button>
+            <button id="theme-toggle">🌙</button>
+            <div class="live-indicator">LIVE FEED</div>
+        </div>
+    </header>
+
+    <!-- TICKER TAPE -->
+    <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+        {
+        "symbols": [
+          { "proName": "OANDA:XAUUSD", "title": "GOLD" },
+          { "proName": "FX:GBPJPY", "title": "GBPJPY" },
+          { "proName": "BITSTAMP:BTCUSD", "title": "BITCOIN" },
+          { "proName": "FOREXCOM:SPX500", "title": "S&P 500" }
+        ],
+        "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": false, "displayMode": "adaptive", "locale": "en"
+      }
+        </script>
+    </div>
+
+    <!-- SESSIONS MONITOR -->
+    <div class="container" style="padding-bottom: 0;">
+        <div class="sessions-bar">
+            <div class="session-card">
+                <div class="session-name">Tokyo Node</div>
+                <div class="session-status" id="tokyo-session">LOADING</div>
+            </div>
+            <div class="session-card">
+                <div class="session-name">London Node</div>
+                <div class="session-status" id="london-session">LOADING</div>
+            </div>
+            <div class="session-card">
+                <div class="session-name">New York Node</div>
+                <div class="session-status" id="ny-session">LOADING</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- ANALYTICS LINKS -->
+        <div class="section-title">Wall Street Analytics Engines</div>
+        <div class="links-grid">
+            <a href="https://www.fxblue.com" target="_blank" class="market-link">FX Blue</a>
+            <a href="https://www.fastbull.com" target="_blank" class="market-link">Fastbulls</a>
+            <a href="https://www.myfxbook.com" target="_blank" class="market-link">MyFxBook</a>
+        </div>
+
+        <!-- SMC CONFIRMATION CHECKLIST (LIVE CONFLUENCE SCORE) -->
+        <div class="section-title">Institutional Order Flow Confirmation (SMC Setup)</div>
+        <div class="terminal-card checklist-box">
+            <div class="checklist-item">
+                <input type="checkbox" id="step1" class="smc-chk">
+                <label for="step1">High Timeframe Bias Alignment (H4/H1 Direction)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="step2" class="smc-chk">
+                <label for="step2">Liquidity Hunt Completed (EQH/EQL or PDH/PDL Swept)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="step3" class="smc-chk">
+                <label for="step3">Market Structure Shift (CHoCH / BOS Confirmation)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="step4" class="smc-chk">
+                <label for="step4">Premium / Discount Pricing (Fibonacci Zone Alignment)</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="step5" class="smc-chk">
+                <label for="step5">Inflow Mitigation (FVG Filled or Order Block Tapped)</label>
+            </div>
+
+            <!-- NJAA YA CONFLUENCE SCORE -->
+            <div class="confluence-display">
+                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase;">Confluence Metric</div>
+                <div id="confluence-percent" style="font-size: 24px; font-weight: 700; color: var(--title-color);">0%</div>
+                <div id="confluence-evaluation" style="font-size: 11px; font-weight: 500; margin-top: 4px;">SYSTEM CHECKING...</div>
+            </div>
+        </div>
+
+        <!-- LIVE CHART -->
+        <div class="section-title">Advanced Analytical Mapping (Live Chart)</div>
+        <div class="terminal-card chart-container">
+            <div id="tradingview_chart"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+                new TradingView.widget({
+                    "width": "100%", "height": "100%", "symbol": "OANDA:XAUUSD", "interval": "H4",
+                    "timezone": "Africa/Dar_es_Salaam", "theme": "dark", "style": "1", "locale": "en",
+                    "toolbar_bg": "#060913", "enable_publishing": false, "hide_side_toolbar": false,
+                    "allow_symbol_change": true, "container_id": "tradingview_chart"
+                });
+            </script>
+        </div>
+
+        <!-- TRADING JOURNAL NODE -->
+        <div class="section-title">Live Trading Journal & History Node</div>
+        <div class="terminal-card journal-box">
+            <div class="journal-stats">
+                <div class="stat-badge">Total Trades: <span id="total-trades" style="font-weight:bold;">0</span></div>
+                <div class="stat-badge">Win Rate: <span id="win-rate" style="color:var(--success-color); font-weight:bold;">0%</span></div>
+            </div>
+            
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Asset Node</label>
+                    <select id="journal-asset">
+                        <option value="XAUUSD">GOLD (XAUUSD)</option>
+                        <option value="GBPJPY">GBPJPY</option>
+                        <option value="BTCUSD">BITCOIN (BTC)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Action Matrix</label>
+                    <select id="journal-action">
+                        <option value="BUY">BUY (Long)</option>
+                        <option value="SELL">SELL (Short)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Risk Threshold (%)</label>
+                    <input type="number" id="journal-risk" value="1" step="0.5">
+                </div>
+                <div class="input-group">
+                    <label>Trade Outcome</label>
+                    <select id="journal-result">
+                        <option value="WIN">WIN (Take Profit)</option>
+                        <option value="LOSS">LOSS (Stop Loss)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="journal-btn" id="add-journal-btn">Log Terminal Position</button>
+            
+            <div class="table-responsive" style="margin-top:15px; border-top:1px solid var(--border-color);">
+                <table id="journal-table">
+                    <thead>
+                        <tr>
+                            <th>Asset</th>
+                            <th>Type</th>
+                            <th>Risk</th>
+                            <th>Outcome</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RISK CALCULATOR -->
+        <div class="section-title">Quantitative Capital Risk Calculator</div>
+        <div class="terminal-card calc-box">
+            <div class="input-group">
+                <label>Terminal Balance ($):</label>
+                <input type="number" id="balance" value="1000">
+            </div>
+            <div class="input-group">
+                <label>Maximum Risk Tolerance (%):</label>
+                <input type="number" id="risk" value="1">
+            </div>
+            <div class="input-group">
+                <label>Stop Loss Threshold (Pips):</label>
+                <input type="number" id="pips" value="30">
+            </div>
+            <button class="calc-btn" id="execute-calc-btn">Execute Risk Analysis</button>
+
+            <div class="result-box" id="resultBox">
+                <p>CAPITAL AT RISK: <span id="cashRisk" style="color: var(--danger-color); font-weight: bold;">$0.00</span></p>
+                <p>ALIGNED LOT SIZE: <span id="lotSize" style="color: var(--success-color); font-weight: bold;">0.00 Lots</span></p>
+            </div>
+        </div>
+
+        <!-- COMPOUNDING CALCULATOR -->
+        <div class="section-title">Institutional Compounding Matrix</div>
+        <div class="terminal-card calc-box">
+            <div class="form-row">
+                <div class="input-group">
+                    <label>Starting Capital ($):</label>
+                    <input type="number" id="compound-base" value="1000">
+                </div>
+                <div class="input-group">
+                    <label>Daily Target (%):</label>
+                    <input type="number" id="compound-rate" value="2" step="0.5">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Horizon Cycle (Days):</label>
+                <input type="number" id="compound-days" value="20">
+            </div>
+            <button class="calc-btn" id="execute-compound-btn" sty
